@@ -16,7 +16,7 @@ func TestGetContentUseMock(t *testing.T) {
 
 		// mock化したいRequestを登録
 		// (requestするhttpメソッド名, requestするURL, 期待する戻り値)を引数に設定する
-		httpmock.RegisterResponder("GET", "https://example.com",
+		httpmock.RegisterResponder("GET", "http://json/comments",
 			func(req *http.Request) (*http.Response, error) {
 				res := httpmock.NewStringResponse(200, "ok")
 				return res, nil
@@ -37,7 +37,7 @@ func TestGetContentUseMock(t *testing.T) {
 		httpmock.Activate()
 		defer httpmock.DeactivateAndReset()
 
-		httpmock.RegisterResponder("GET", "https://example.com",
+		httpmock.RegisterResponder("GET", "http://json/comments",
 			func(req *http.Request) (*http.Response, error) {
 				res := httpmock.NewStringResponse(500, "")
 				return res, nil

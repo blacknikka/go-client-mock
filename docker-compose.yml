@@ -5,6 +5,7 @@ services:
     volumes:
       - '.:/go/src/github.com/blacknikka/go-client-mock'
     tty: true
+    working_dir: /go/src/github.com/blacknikka/go-client-mock
   json:
     image: clue/json-server
     ports:

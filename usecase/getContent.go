@@ -8,6 +8,10 @@ import (
 	"github.com/blacknikka/go-client-mock/client"
 )
 
+const (
+	InternalServerError string = "internal error"
+)
+
 func NewContentUsecase(c client.HttpClient) *ContentUsecase {
 	return &ContentUsecase{
 		httpClient: c,
@@ -31,6 +35,10 @@ func (content ContentUsecase) GetContent() (string, error) {
 		return "", errors.New("request error")
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusInternalServerError {
+		return "", errors.New(InternalServerError)
+	}
 
 	byteArray, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

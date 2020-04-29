@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	// google
 	client := &http.Client{}
 	contentUsecase := usecase.NewContentUsecase(client)
 	content, err := contentUsecase.GetContent()
@@ -16,4 +17,11 @@ func main() {
 	}
 
 	log.Println(content)
+
+	// mock
+	mockContent, err := usecase.GetContentUseMock()
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println(mockContent)
 }

@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -19,7 +18,6 @@ func AddAJob(job TimerJob) bool {
 
 	go func() {
 		for range time.Tick(job.Time) {
-			fmt.Println("Tick!!")
 			job.Job(job.Chan)
 		}
 	}()

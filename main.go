@@ -35,12 +35,10 @@ func main() {
 			contentUsecase := usecase.NewContentUsecase(client)
 			content, err := contentUsecase.GetContent()
 			if err != nil {
-				log.Println(err)
 				ch <- err.Error()
 			}
 
 			ch <- content
-			log.Println(content)
 		},
 	})
 

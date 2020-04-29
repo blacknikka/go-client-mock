@@ -13,7 +13,7 @@ const (
 func GetContentUseMock() (string, error) {
 	// get client
 
-	request, err := http.NewRequest("GET", "https://example.com", nil)
+	request, err := http.NewRequest("GET", "http://json/comments", nil)
 	if err != nil {
 		return "", errors.New("request creation error")
 	}

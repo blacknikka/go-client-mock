@@ -1,0 +1,13 @@
+version: '2'
+services:
+  golang:
+    image: golang
+    volumes:
+      - '.:/go/src/github.com/blacknikka/go-client-mock'
+    tty: true
+  json:
+    image: clue/json-server
+    ports:
+      - '80:80'
+    volumes:
+      - './db.json:/data/db.json'

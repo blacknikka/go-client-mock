@@ -25,7 +25,7 @@ type ContentUsecase struct {
 func (content ContentUsecase) GetContent() (string, error) {
 	// get client
 
-	request, err := http.NewRequest("GET", "https://google.com", nil)
+	request, err := http.NewRequest("GET", "http://json/posts", nil)
 	if err != nil {
 		return "", errors.New("request creation error")
 	}

@@ -33,12 +33,13 @@ func (c *clientMock) Do(req *http.Request) (*http.Response, error) {
 	return c.MockedDo(req)
 }
 
-func TestNewContentUsecase(t *testing.T) {
-	t.Run("Client Do正常系", func(t *testing.T) {
+func TestGetContent(t *testing.T) {
+	t.Run("GetContent正常系", func(t *testing.T) {
 		spyMocked := &clientMock{
 			MockedDo: func(req *http.Request) (*http.Response, error) {
 				return &http.Response{
-					Body: ioutil.NopCloser(bytes.NewBufferString(`OK`)),
+					StatusCode: http.StatusOK,
+					Body:       ioutil.NopCloser(bytes.NewBufferString("OK")),
 				}, nil
 			},
 		}
@@ -50,6 +51,31 @@ func TestNewContentUsecase(t *testing.T) {
 		}
 
 		if content != "OK" {
+			t.Errorf("Returned Content invalid: %v", content)
+		}
+	})
+
+	t.Run("GetContent異常系", func(t *testing.T) {
+		spyMocked := &clientMock{
+			MockedDo: func(req *http.Request) (*http.Response, error) {
+				return &http.Response{
+					StatusCode: http.StatusInternalServerError,
+					Body:       ioutil.NopCloser(bytes.NewBufferString("")),
+				}, nil
+			},
+		}
+		contentUsecase := NewContentUsecase(spyMocked)
+		content, err := contentUsecase.GetContent()
+
+		if err == nil {
+			t.Errorf("err shouldn't be nil: %v", err)
+		}
+
+		if err.Error() != InternalServerError {
+			t.Errorf("error message invalid want: %v, got: %v", IntervanServerError, err.Error())
+		}
+
+		if content != "" {
 			t.Errorf("Returned Content invalid: %v", content)
 		}
 	})

@@ -27,23 +27,39 @@ func main() {
 	// log.Println(mockContent)
 
 	resultCh := make(chan string)
+	stopCh := make(chan struct{})
 	usecase.AddAJob(usecase.TimerJob{
-		Time: (1000 * time.Millisecond),
-		Chan: resultCh,
+		Time:     (1000 * time.Millisecond),
+		Chan:     resultCh,
+		StopChan: stopCh,
 		Job: func(ch chan string) {
 			client := &http.Client{}
 			contentUsecase := usecase.NewContentUsecase(client)
 			content, err := contentUsecase.GetContent()
 			if err != nil {
 				ch <- err.Error()
+				return
 			}
 
 			ch <- content
 		},
 	})
 
+	go func() {
+		time.Sleep(time.Second * 5)
+
+		log.Println("stop")
+		close(stopCh)
+	}()
+
 	for {
-		result := <-resultCh
+		result, ok := <-resultCh
+		if ok == false {
+			break
+		}
+
 		log.Println(result)
 	}
+
+	log.Println("done")
 }

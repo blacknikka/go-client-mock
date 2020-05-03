@@ -18,4 +18,18 @@ services:
       - '3000:3000'
     volumes:
       - './grafana:/var/lib/grafana'
+  influx:
+    build: ./docker/influx
+    ports:
+      - '8086:8086'
+    volumes:
+      - './influx/db:/var/lib/influxdb'
+      - './influx/influxdb.conf:/etc/influxdb/influxdb.conf'
+  telegraf:
+    image: telegraf
+    depends_on:
+      - influx
+    volumes:
+      - './telegraf/telegraf.conf:/etc/telegraf/telegraf.conf'
+
 

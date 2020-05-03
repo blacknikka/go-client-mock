@@ -1,18 +1,18 @@
 package usecase
 
 import (
+	"context"
 	"time"
 )
 
 type TimerJob struct {
-	Time     time.Duration
-	Chan     chan string
-	StopChan chan struct{}
-	Job      func(chan string)
+	Time time.Duration
+	Chan chan string
+	Job  func(chan string)
 }
 
 // AddAJob adds a job and will run it.
-func AddAJob(job TimerJob) bool {
+func AddAJob(ctx context.Context, job TimerJob) bool {
 	if job.Time == 0 {
 		return false
 	}
@@ -24,10 +24,9 @@ func AddAJob(job TimerJob) bool {
 
 		for range time.Tick(job.Time) {
 			job.Job(job.Chan)
-
 			select {
-			case <-job.StopChan:
-				println("stop request received.")
+			case <-ctx.Done():
+				println(ctx.Err())
 				return
 			default:
 			}

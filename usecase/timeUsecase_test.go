@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"testing"
 	"time"
 )
@@ -9,28 +10,32 @@ func TestAddAJob(t *testing.T) {
 	t.Run("AddAJob 異常系 タイマがゼロ", func(t *testing.T) {
 		timeJob := TimerJob{}
 
-		result := AddAJob(timeJob)
+		ctx := context.Background()
+		ctxParent, cancel := context.WithCancel(ctx)
+		result := AddAJob(ctxParent, timeJob)
 		if result != false {
 			t.Errorf("result should be false: %v", result)
 		}
+		cancel()
 	})
 
 	t.Run("AddAJob 正常系", func(t *testing.T) {
 		resultCh := make(chan string)
-		stopCh := make(chan struct{})
+
+		ctx := context.Background()
+		ctxParent, cancel := context.WithCancel(ctx)
 
 		counter := 0
 
 		timeJob := TimerJob{
-			Time:     (500 * time.Millisecond),
-			Chan:     resultCh,
-			StopChan: stopCh,
+			Time: (500 * time.Millisecond),
+			Chan: resultCh,
 			Job: func(ch chan string) {
 				counter++
 			},
 		}
 
-		result := AddAJob(timeJob)
+		result := AddAJob(ctxParent, timeJob)
 		if result != true {
 			t.Errorf("result should be true: %v", result)
 		}
@@ -39,7 +44,7 @@ func TestAddAJob(t *testing.T) {
 			time.Sleep(time.Second * 1)
 
 			// jobを停止
-			close(stopCh)
+			cancel()
 		}()
 
 		for {

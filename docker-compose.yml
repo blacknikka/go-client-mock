@@ -3,7 +3,7 @@ services:
   golang:
     image: golang
     volumes:
-      - '.:/go/src/github.com/blacknikka/go-client-mock'
+      - './src:/go/src/github.com/blacknikka/go-client-mock'
     tty: true
     working_dir: /go/src/github.com/blacknikka/go-client-mock
   json:

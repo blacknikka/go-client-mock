@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"time"
@@ -27,11 +28,12 @@ func main() {
 	// log.Println(mockContent)
 
 	resultCh := make(chan string)
-	stopCh := make(chan struct{})
-	usecase.AddAJob(usecase.TimerJob{
-		Time:     (1000 * time.Millisecond),
-		Chan:     resultCh,
-		StopChan: stopCh,
+
+	ctx := context.Background()
+	ctxParent, cancel := context.WithCancel(ctx)
+	usecase.AddAJob(ctxParent, usecase.TimerJob{
+		Time: (1000 * time.Millisecond),
+		Chan: resultCh,
 		Job: func(ch chan string) {
 			client := &http.Client{}
 			contentUsecase := usecase.NewContentUsecase(client)
@@ -49,7 +51,7 @@ func main() {
 		time.Sleep(time.Second * 5)
 
 		log.Println("stop")
-		close(stopCh)
+		cancel()
 	}()
 
 	for {

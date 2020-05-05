@@ -44,7 +44,7 @@ func TestGetContent(t *testing.T) {
 			},
 		}
 		contentUsecase := NewContentUsecase(spyMocked)
-		content, err := contentUsecase.GetContent()
+		content, err := contentUsecase.GetContent("http://json/posts")
 
 		if err != nil {
 			t.Errorf("err should be nil: %v", err)
@@ -65,7 +65,7 @@ func TestGetContent(t *testing.T) {
 			},
 		}
 		contentUsecase := NewContentUsecase(spyMocked)
-		content, err := contentUsecase.GetContent()
+		content, err := contentUsecase.GetContent("http://json/posts")
 
 		if err == nil {
 			t.Errorf("err shouldn't be nil: %v", err)

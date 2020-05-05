@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"time"
 	"errors"
+	"time"
 )
 
 type CheckUpdater struct {

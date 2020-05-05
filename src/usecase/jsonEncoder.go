@@ -1,11 +1,11 @@
 package usecase
 
 import (
-	"errors"
 	"encoding/json"
+	"errors"
 )
 
-type JsonEncoder struct {}
+type JsonEncoder struct{}
 
 func (c *JsonEncoder) Decode(str string, structure interface{}) (interface{}, error) {
 	err := json.Unmarshal([]byte(str), structure)

@@ -8,10 +8,10 @@ import (
 
 const (
 	ErrorForRequest string = "request failed"
-	ErrorForDecode string = "decode error"
+	ErrorForDecode  string = "decode error"
 )
 
-type fetchAndCheck struct{
+type fetchAndCheck struct {
 	contentUsecase *usecase.ContentUsecase
 }
 

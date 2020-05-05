@@ -1,17 +1,17 @@
 package usecase
 
 import (
-	"testing"
 	"log"
+	"testing"
 )
 
 type InfluxStructure struct {
 	Result []struct {
-		Id int `json:"statement_id"`
+		Id     int `json:"statement_id"`
 		Series []struct {
-			Name string `json:"name"`
-			Columns []string `json:"columns"`
-			Values []interface{} `json:values`
+			Name    string        `json:"name"`
+			Columns []string      `json:"columns"`
+			Values  []interface{} `json:values`
 		} `json:"series"`
 	} `json:"results"`
 }

@@ -1,13 +1,20 @@
 package fetch
 
 import (
-	"net/http"
 	"errors"
 
 	"github.com/blacknikka/go-client-mock/usecase"
 )
 
-type FetchAndCheck struct{}
+type fetchAndCheck struct{
+	contentUsecase *usecase.ContentUsecase
+}
+
+func NewFetchAndCheck(cu *usecase.ContentUsecase) *fetchAndCheck {
+	return &fetchAndCheck{
+		contentUsecase: cu,
+	}
+}
 
 type InfluxStructure struct {
 	Result []struct {
@@ -20,10 +27,8 @@ type InfluxStructure struct {
 	} `json:"results"`
 }
 
-func (FetchAndCheck) Exec() (bool, error) {
-	client := &http.Client{}
-	contentUsecase := usecase.NewContentUsecase(client)
-	result, err := contentUsecase.GetContent(`http://localhost:8086/query?db=telegraf&q=SELECT mean("usage_idle") FROM "cpu" WHERE time >= now() - 3m GROUP BY time(10s) fill(null)`)
+func (fc fetchAndCheck) Exec() (bool, error) {
+	result, err := fc.contentUsecase.GetContent(`http://localhost:8086/query?db=telegraf&q=SELECT mean("usage_idle") FROM "cpu" WHERE time >= now() - 3m GROUP BY time(10s) fill(null)`)
 	if err != nil {
 		return false, errors.New("request failed")
 	}

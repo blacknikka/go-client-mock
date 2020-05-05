@@ -61,11 +61,15 @@ func TestExec(t *testing.T) {
 			},
 		}
 		contentUsecase := usecase.NewContentUsecase(spyMocked)
-		content, _ := contentUsecase.GetContent("http://example.com")
 
-		if content != responseString {
-			t.Errorf("got %v, want %vv", content, responseString)
+		fetchAndCheck := NewFetchAndCheck(contentUsecase)
+		result, err := fetchAndCheck.Exec()
+		if result != true {
+			t.Errorf("result should be true: %v", result)
 		}
 
+		if err != nil {
+			t.Errorf("err should be nil: %v", nil)
+		}
 	})
 }

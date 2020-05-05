@@ -1,11 +1,10 @@
 package usecase
 
 import (
-	"log"
 	"testing"
 )
 
-type InfluxStructure struct {
+type influxStructure struct {
 	Result []struct {
 		Id     int `json:"statement_id"`
 		Series []struct {
@@ -50,7 +49,7 @@ const checkedStr string = `{
 func TestDecode(t *testing.T) {
 	t.Run("Decode正常系", func(t *testing.T) {
 		sut := &JsonEncoder{}
-		var structure InfluxStructure
+		var structure influxStructure
 		result, err := sut.Decode(checkedStr, &structure)
 		if err != nil {
 			t.Errorf("error should be nil :%v", err)
@@ -59,13 +58,11 @@ func TestDecode(t *testing.T) {
 		if result == nil {
 			t.Errorf("result shouldn't be nil: %v", result)
 		}
-
-		log.Println(structure)
 	})
 
 	t.Run("Decode異常系", func(t *testing.T) {
 		sut := &JsonEncoder{}
-		var target InfluxStructure
+		var target influxStructure
 
 		// path the invalid json structure string.
 		result, err := sut.Decode("{", &target)

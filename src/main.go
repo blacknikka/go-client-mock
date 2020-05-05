@@ -10,23 +10,6 @@ import (
 )
 
 func main() {
-	// // google
-	// client := &http.Client{}
-	// contentUsecase := usecase.NewContentUsecase(client)
-	// content, err := contentUsecase.GetContent()
-	// if err != nil {
-	// 	log.Println(err)
-	// }
-
-	// log.Println(content)
-
-	// // mock
-	// mockContent, err := usecase.GetContentUseMock()
-	// if err != nil {
-	// 	log.Println(err)
-	// }
-	// log.Println(mockContent)
-
 	resultCh := make(chan string)
 
 	ctx := context.Background()
@@ -37,7 +20,7 @@ func main() {
 		Job: func(ch chan string) {
 			client := &http.Client{}
 			contentUsecase := usecase.NewContentUsecase(client)
-			content, err := contentUsecase.GetContent()
+			content, err := contentUsecase.GetContent("http://json/posts")
 			if err != nil {
 				ch <- err.Error()
 				return

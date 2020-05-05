@@ -22,10 +22,10 @@ type ContentUsecase struct {
 	httpClient client.HttpClient
 }
 
-func (content ContentUsecase) GetContent() (string, error) {
+func (content ContentUsecase) GetContent(url string) (string, error) {
 	// get client
 
-	request, err := http.NewRequest("GET", "http://json/posts", nil)
+	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return "", errors.New("request creation error")
 	}

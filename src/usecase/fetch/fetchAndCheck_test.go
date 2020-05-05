@@ -2,6 +2,7 @@ package fetch
 
 import (
 	"bytes"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -70,6 +71,55 @@ func TestExec(t *testing.T) {
 
 		if err != nil {
 			t.Errorf("err should be nil: %v", nil)
+		}
+	})
+
+	t.Run("Exec異常系_request error", func(t *testing.T) {
+		spyMocked := &clientMock{
+			MockedDo: func(req *http.Request) (*http.Response, error) {
+				return &http.Response{}, errors.New("something error")
+			},
+		}
+		contentUsecase := usecase.NewContentUsecase(spyMocked)
+
+		fetchAndCheck := NewFetchAndCheck(contentUsecase)
+		result, err := fetchAndCheck.Exec()
+		if result != false {
+			t.Errorf("result should be false: %v", result)
+		}
+
+		if err != nil {
+			if err.Error() != ErrorForRequest {
+				t.Errorf("err message is invalid: %v", err.Error())
+			}
+		} else {
+			t.Errorf("err shouldn't be nil: %v", err)
+		}
+	})
+
+	t.Run("Exec異常系_json decode error", func(t *testing.T) {
+		spyMocked := &clientMock{
+			MockedDo: func(req *http.Request) (*http.Response, error) {
+				return &http.Response{
+					StatusCode: http.StatusOK,
+					Body:       ioutil.NopCloser(bytes.NewBufferString("{")),
+				}, nil
+			},
+		}
+		contentUsecase := usecase.NewContentUsecase(spyMocked)
+
+		fetchAndCheck := NewFetchAndCheck(contentUsecase)
+		result, err := fetchAndCheck.Exec()
+		if result != false {
+			t.Errorf("result should be false: %v", result)
+		}
+
+		if err != nil {
+			if err.Error() != ErrorForDecode {
+				t.Errorf("err message is invalid: %v", err.Error())
+			}
+		} else {
+			t.Errorf("err shouldn't be nil: %v", err)
 		}
 	})
 }

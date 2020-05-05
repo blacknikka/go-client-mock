@@ -6,6 +6,11 @@ import (
 	"github.com/blacknikka/go-client-mock/usecase"
 )
 
+const (
+	ErrorForRequest string = "request failed"
+	ErrorForDecode string = "decode error"
+)
+
 type fetchAndCheck struct{
 	contentUsecase *usecase.ContentUsecase
 }
@@ -30,14 +35,14 @@ type InfluxStructure struct {
 func (fc fetchAndCheck) Exec() (bool, error) {
 	result, err := fc.contentUsecase.GetContent(`http://localhost:8086/query?db=telegraf&q=SELECT mean("usage_idle") FROM "cpu" WHERE time >= now() - 3m GROUP BY time(10s) fill(null)`)
 	if err != nil {
-		return false, errors.New("request failed")
+		return false, errors.New(ErrorForRequest)
 	}
 
 	encoder := usecase.JsonEncoder{}
 	var structure InfluxStructure
 	_, err = encoder.Decode(result, &structure)
 	if err != nil {
-		return false, errors.New("error for request")
+		return false, errors.New(ErrorForDecode)
 	}
 
 	return true, nil

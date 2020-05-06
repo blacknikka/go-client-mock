@@ -1,50 +1,51 @@
 package main
 
 import (
-	"context"
 	"log"
 	"net/http"
-	"time"
 
-	"github.com/blacknikka/go-client-mock/usecase"
+	"github.com/blacknikka/go-client-mock/router"
 )
 
 func main() {
-	resultCh := make(chan string)
+	router.Init()
+	log.Fatal(http.ListenAndServe(":5000", nil))
 
-	ctx := context.Background()
-	ctxParent, cancel := context.WithCancel(ctx)
-	usecase.AddAJob(ctxParent, usecase.TimerJob{
-		Time: (1000 * time.Millisecond),
-		Chan: resultCh,
-		Job: func(ch chan string) {
-			client := &http.Client{}
-			contentUsecase := usecase.NewContentUsecase(client)
-			content, err := contentUsecase.GetContent("http://json/posts")
-			if err != nil {
-				ch <- err.Error()
-				return
-			}
+	// resultCh := make(chan string)
 
-			ch <- content
-		},
-	})
+	// ctx := context.Background()
+	// ctxParent, cancel := context.WithCancel(ctx)
+	// usecase.AddAJob(ctxParent, usecase.TimerJob{
+	// 	Time: (1000 * time.Millisecond),
+	// 	Chan: resultCh,
+	// 	Job: func(ch chan string) {
+	// 		client := &http.Client{}
+	// 		contentUsecase := usecase.NewContentUsecase(client)
+	// 		content, err := contentUsecase.GetContent("http://json/posts")
+	// 		if err != nil {
+	// 			ch <- err.Error()
+	// 			return
+	// 		}
 
-	go func() {
-		time.Sleep(time.Second * 5)
+	// 		ch <- content
+	// 	},
+	// })
 
-		log.Println("stop")
-		cancel()
-	}()
+	// go func() {
+	// 	time.Sleep(time.Second * 5)
 
-	for {
-		result, ok := <-resultCh
-		if ok == false {
-			break
-		}
+	// 	log.Println("stop")
+	// 	cancel()
+	// }()
 
-		log.Println(result)
-	}
+	// for {
+	// 	result, ok := <-resultCh
+	// 	if ok == false {
+	// 		break
+	// 	}
 
-	log.Println("done")
+	// 	log.Println(result)
+	// }
+
+	// log.Println("done")
 }

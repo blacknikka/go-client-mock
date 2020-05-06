@@ -24,10 +24,6 @@ const responseString string = `{
 					],
 					"values": [
 						[
-							"2020-05-05T05:49:10Z",
-							null
-						],
-						[
 							"2020-05-05T05:49:20Z",
 							98.31379745672704
 						],
@@ -70,8 +66,12 @@ func TestExec(t *testing.T) {
 			t.Errorf("err should be nil: %v", nil)
 		}
 
-		if result != true {
-			t.Errorf("result should be true: %v", result)
+		if result == nil {
+			t.Errorf("result shouldn't be nil: %v", result)
+		}
+
+		if len(result) != 2 {
+			t.Errorf("returned value is invalid: %v", result)
 		}
 	})
 
@@ -85,8 +85,8 @@ func TestExec(t *testing.T) {
 
 		fetchAndCheck := NewFetchAndCheck(contentUsecase)
 		result, err := fetchAndCheck.Exec()
-		if result != false {
-			t.Errorf("result should be false: %v", result)
+		if result != nil {
+			t.Errorf("result should be nil: %v", result)
 		}
 
 		if err != nil {
@@ -111,8 +111,8 @@ func TestExec(t *testing.T) {
 
 		fetchAndCheck := NewFetchAndCheck(contentUsecase)
 		result, err := fetchAndCheck.Exec()
-		if result != false {
-			t.Errorf("result should be false: %v", result)
+		if result != nil {
+			t.Errorf("result should be nil: %v", result)
 		}
 
 		if err != nil {

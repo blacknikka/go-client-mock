@@ -2,17 +2,27 @@ package newer
 
 import (
 	"time"
+
+	"github.com/blacknikka/go-client-mock/usecase"
 )
 
-type GetNewer struct{}
+type GetNewer struct {
+	updateChecker *usecase.CheckUpdater
+}
 
-func (GetNewer) Get(data []interface{}, baseTime time.Time) ([][]interface{}, error) {
+func NewGetNewer(checker *usecase.CheckUpdater) *GetNewer {
+	return &GetNewer{
+		updateChecker: checker,
+	}
+}
+
+func (newer *GetNewer) Get(data []interface{}) ([][]interface{}, error) {
 	result := [][]interface{}{}
 	for _, d := range data {
 		if timeData, ok := d.([]interface{}); ok {
 			if timeString, ok := timeData[0].(string); ok {
 				if t, ok := time.Parse("2006-01-02T15:04:05Z", timeString); ok == nil {
-					if t.After(baseTime) {
+					if isNewer, _ := newer.updateChecker.CheckUpdate(t); isNewer {
 						array := []interface{}{}
 						array = append(array, t)
 						// if this dataset is newer than the base time,

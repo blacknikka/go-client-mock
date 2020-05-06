@@ -5,7 +5,7 @@ import (
 	"reflect"
 
 	"github.com/blacknikka/go-client-mock/usecase"
-	"github.com/blacknikka/go-client-mock/usecase/latest"
+	"github.com/blacknikka/go-client-mock/usecase/newer"
 )
 
 const (
@@ -16,13 +16,13 @@ const (
 
 type fetchAndCheck struct {
 	contentUsecase *usecase.ContentUsecase
-	updateChecker *usecase.CheckUpdater
+	newerChecker *newer.GetNewer
 }
 
 func NewFetchAndCheck(cu *usecase.ContentUsecase) *fetchAndCheck {
 	return &fetchAndCheck{
 		contentUsecase: cu,
-		updateChecker: &usecase.CheckUpdater{},
+		newerChecker: newer.NewGetNewer(&usecase.CheckUpdater{}),
 	}
 }
 
@@ -37,18 +37,18 @@ type InfluxStructure struct {
 	} `json:"results"`
 }
 
-func (fc fetchAndCheck) Exec() (bool, error) {
+func (fc fetchAndCheck) Exec() ([][]interface{}, error) {
 	// fetch via http
 	result, err := fc.contentUsecase.GetContent(`http://localhost:8086/query?db=telegraf&q=SELECT mean("usage_idle") FROM "cpu" WHERE time >= now() - 3m GROUP BY time(10s) fill(null)`)
 	if err != nil {
-		return false, errors.New(ErrorForRequest)
+		return nil, errors.New(ErrorForRequest)
 	}
 
 	// decode json string
 	encoder := usecase.JsonEncoder{}
 	content, err := encoder.Decode(result, reflect.TypeOf(InfluxStructure{}))
 	if err != nil {
-		return false, errors.New(ErrorForDecode)
+		return nil, errors.New(ErrorForDecode)
 	}
 
 	influx := content.(*InfluxStructure)
@@ -56,20 +56,15 @@ func (fc fetchAndCheck) Exec() (bool, error) {
 	// check the json structure is valid
 	// check if having the specified data member.
 	if ok := isValid(influx); ok == false {
-		return false, errors.New(ErrorForLatestData)
+		return nil, errors.New(ErrorForLatestData)
 	}
 
-	getLatest := &latest.GetLatest{}
-	latestTime := getLatest.Get(influx.Result[0].Series[0].Values)
-
-	if latestTime.IsZero() == false {
-		if isUpdated, err := fc.updateChecker.CheckUpdate(latestTime); err == nil {
-			return isUpdated, nil
-		}
-		return false, err
+	newerItems, err := fc.newerChecker.Get(influx.Result[0].Series[0].Values)
+	if err == nil {
+		return newerItems, nil
 	}
 
-	return false, errors.New(ErrorForLatestData)
+	return nil, errors.New(ErrorForLatestData)
 }
 
 func isValid(influx *InfluxStructure) bool {

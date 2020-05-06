@@ -3,7 +3,8 @@ package newer
 import (
 	"testing"
 	"time"
-	"log"
+
+	"github.com/blacknikka/go-client-mock/usecase"
 )
 
 const (
@@ -26,9 +27,13 @@ func TestGet(t *testing.T) {
 		// create a base time
 		baseTime, _ := time.Parse(timeFormat, "2020-05-05T05:49:19Z")
 
+		// create checker (set base time)
+		checker := &usecase.CheckUpdater{}
+		checker.CheckUpdate(baseTime)
+
 		// create a test instance
-		sut := GetNewer{}
-		result, err := sut.Get(data, baseTime)
+		sut := NewGetNewer(checker)
+		result, err := sut.Get(data)
 		if err != nil {
 			t.Errorf("error should be nil :%v", err)
 		}
@@ -72,9 +77,13 @@ func TestGet(t *testing.T) {
 		// create a base time
 		baseTime, _ := time.Parse(timeFormat, "2020-05-05T05:49:20Z")
 
+		// create checker (set base time)
+		checker := &usecase.CheckUpdater{}
+		checker.CheckUpdate(baseTime)
+
 		// create a test instance
-		sut := GetNewer{}
-		result, _ := sut.Get(data, baseTime)
+		sut := NewGetNewer(checker)
+		result, _ := sut.Get(data)
 
 		comparer := []struct {
 			Time string
@@ -111,9 +120,13 @@ func TestGet(t *testing.T) {
 		// create a base time
 		baseTime, _ := time.Parse(timeFormat, "2020-05-05T05:49:19Z")
 
+		// create checker (set base time)
+		checker := &usecase.CheckUpdater{}
+		checker.CheckUpdate(baseTime)
+
 		// create a test instance
-		sut := GetNewer{}
-		result, _ := sut.Get(data, baseTime)
+		sut := NewGetNewer(checker)
+		result, _ := sut.Get(data)
 
 		comparer := []struct {
 			Time string
@@ -127,7 +140,6 @@ func TestGet(t *testing.T) {
 			{"2020-05-05T05:49:20Z", 1.0, 2, -3, -4.0, 0, 4294967295, },
 		}
 
-		log.Println(result)
 		for idx, data := range comparer {
 			if tm, _ := time.Parse(timeFormat, data.Time); tm.Equal(result[idx][0].(time.Time)) != true {
 				t.Errorf("want %v, got %v", data.Time, result[idx][0])
@@ -178,9 +190,13 @@ func TestGet(t *testing.T) {
 		// create a base time
 		baseTime, _ := time.Parse(timeFormat, "2020-05-05T05:49:19Z")
 
+		// create checker (set base time)
+		checker := &usecase.CheckUpdater{}
+		checker.CheckUpdate(baseTime)
+
 		// create a test instance
-		sut := GetNewer{}
-		result, _ := sut.Get(data, baseTime)
+		sut := NewGetNewer(checker)
+		result, _ := sut.Get(data)
 
 		comparer := []struct {
 			Time string

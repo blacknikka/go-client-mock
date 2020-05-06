@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"testing"
+	"reflect"
 )
 
 type influxStructure struct {
@@ -49,8 +50,7 @@ const checkedStr string = `{
 func TestDecode(t *testing.T) {
 	t.Run("Decode正常系", func(t *testing.T) {
 		sut := &JsonEncoder{}
-		var structure influxStructure
-		result, err := sut.Decode(checkedStr, &structure)
+		result, err := sut.Decode(checkedStr, reflect.TypeOf(influxStructure{}))
 		if err != nil {
 			t.Errorf("error should be nil :%v", err)
 		}
@@ -58,14 +58,17 @@ func TestDecode(t *testing.T) {
 		if result == nil {
 			t.Errorf("result shouldn't be nil: %v", result)
 		}
+
+		if reflect.TypeOf(result) != reflect.TypeOf(&influxStructure{}) {
+			t.Errorf("returned type is invalid. want :%T, got: %T", &influxStructure{}, result)
+		}
 	})
 
 	t.Run("Decode異常系", func(t *testing.T) {
 		sut := &JsonEncoder{}
-		var target influxStructure
 
 		// path the invalid json structure string.
-		result, err := sut.Decode("{", &target)
+		result, err := sut.Decode("{", reflect.TypeOf(influxStructure{}))
 		if err == nil {
 			t.Errorf("error shouldn't be nil: %v", err)
 		}

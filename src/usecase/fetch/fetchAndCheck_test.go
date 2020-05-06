@@ -65,12 +65,13 @@ func TestExec(t *testing.T) {
 
 		fetchAndCheck := NewFetchAndCheck(contentUsecase)
 		result, err := fetchAndCheck.Exec()
-		if result != true {
-			t.Errorf("result should be true: %v", result)
-		}
 
 		if err != nil {
 			t.Errorf("err should be nil: %v", nil)
+		}
+
+		if result != true {
+			t.Errorf("result should be true: %v", result)
 		}
 	})
 
